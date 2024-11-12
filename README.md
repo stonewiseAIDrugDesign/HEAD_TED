@@ -1,6 +1,6 @@
 # Assessing Conformation Validity and Rationality of Deep Learning-Generated 3D Molcules
 
----
+**Paper preprint on [arXiv]()**
 
 Recent advancements in artificial intelligence (AI) have opened new frontiers in 3D molecule generation, with applications in drug design, materials science, and more. However, evaluating the quality of generated 3D conformations remains challenging due to limitations in current methods. This project presents an open-source solution to address these limitations by combining speed with quantum mechanical (QM)-level accuracy.
 
@@ -9,13 +9,16 @@ Recent advancements in artificial intelligence (AI) have opened new frontiers in
 Most current evaluation methods for AI-generated 3D molecules rely either on empirical geometric metrics, which may overlook subtle conformational issues, or on molecular mechanics (MM) energy calculations, which often lack accuracy and atomic/torsional detail. This project introduces a two-stage approach to improve upon existing evaluation techniques:
 
 1. **Validity Test**: <u>H</u>igh-<u>E</u>nergy <u>A</u>tom <u>D</u>etection ([HEAD](https://github.com/stonewiseAIDrugDesign/HEAD_TED/blob/main/HEAD/README.md)) utilizes an AI-derived force field to identify atoms with elevated energy levels caused by implausible neighboring environments.
-2. **Rationality Test**: <u>T</u>orsional <u>E</u>nergy <u>D</u>escriptor (TED) applies a deep learning model trained with density functional theory (DFT)-level accuracy to detect torsional energies, specifically around rotatable bonds.
+2. **Rationality Test**: <u>T</u>orsional <u>E</u>nergy <u>D</u>escriptor ([TED](https://github.com/stonewiseAIDrugDesign/HEAD_TED/blob/main/TED/README.md)) applies a deep learning model trained with density functional theory (DFT)-level accuracy to detect torsional energies, specifically around rotatable bonds.
 
-Our method has been tested on five prominent AI-driven 3D molecule generation models, namely Lingo3DMol, Pocket2Mol, PocketFlow, TargetDiff and PMDM across 101 targets in the Directory of Useful Decoys-Enhanced (DUD-E) dataset. 
+![Schematic plot](./assets/schematic_plot.svg "HEAD & TED")
 
-![Schematic plot](./assets/schematic_plot.png "HEAD & TED")
+Our method has been tested on five prominent AI-driven 3D molecule generation models, namely [Lingo3DMolv2](https://www.nature.com/articles/s42256-023-00775-6), [Pocket2Mol](https://arxiv.org/abs/2205.07249), [PocketFlow](https://www.nature.com/articles/s42256-024-00808-8), [TargetDiff](https://arxiv.org/abs/2303.03543) and [PMDM](https://www.nature.com/articles/s41467-024-46569-1) across 101 targets in the Directory of Useful Decoys-Enhanced (DUD-E) dataset. 
 
-## Installation
+
+
+
+## Installation & Usage
 
 To use this package, clone the repository and install the dependencies:
 
@@ -24,36 +27,14 @@ git clone https://github.com/stonewiseAIDrugDesign/HEAD_TED.git
 
 ```
 
-## Usage
-After installation, you can run the evaluation pipeline on your own dataset of generated molecules or replicate the experiments conducted in this study.
+### 1. Dependencies for Running HEAD
 
-### 1. Running the Validity Test
+See [HEAD](https://github.com/stonewiseAIDrugDesign/HEAD_TED/blob/main/HEAD/README.md) for installation details.
 
-```python
-from head import HEAD
+### 2. Dependencies for Running TED
 
-# Input a csv that stores sdf strings with column name, e.g., conformer_sdf
-head = HEAD(
-    file_path='example.csv',
-    csv_column="conformer_sdf",  # the field that stores sdf string of input molecules
-    gpu=0
-)
+See [TED](https://github.com/stonewiseAIDrugDesign/HEAD_TED/blob/main/TED/README.md) for installation details.
 
-# Or input an sdf file that stores one of many molecule conformations
-head = HEAD(
-    file_path='example.sdf',
-    gpu=0
-)
-
-head.run(use_info_entropy=True)
-head.write_report(output_csv="./head_report.csv")
-```
-
-### 2. Running the Rationality Test
-```python
-
-# to be update
-```
 
 ## Example Datasets
 To facilitate testing, example datasets are provided. You can also download the released GM5K, GM1K or generated molecules by each model via the link: to be uploaded.
@@ -68,7 +49,3 @@ more to come...
 
 ## License
 This project is licensed under the MIT License.
-
-
-
-

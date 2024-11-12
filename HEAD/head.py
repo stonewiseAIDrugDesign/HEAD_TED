@@ -46,12 +46,16 @@ class HEAD:
                  remove_Hs=False,
                  sanitize=False,
                  gpu: int=0): 
-        """ init 
+        """ init. 
         Args:
-            use_info_entropy: whether to use information entropy 
-        
-        Notes:
-            - 
+            file_path: The path that contains input molecule conformations, support: .sdf, .pdb, .csv.
+            csv_column: The column name that specifies location of sdf strings stored in csv file. This is only working when using csv file as input.
+            add_Hs: Add Hydrogen atoms by RDKit if necessary. Note, this function removes the original Hydrogens by default.
+            remove_Hs: Whether to remove Hydrogens when loading conformations.
+            sanitize: Whether to use RDKit sanitiziation when loading conformations.
+            gpu: Specify the GPU to run, default cuda:0 if cuda is available.
+            
+        Notes: HEAD requires each input conformation with correct Hydrogen atoms provided. If the inputs do not contain Hydrogen atoms, simply set add_Hs to True.
         
         """
         
@@ -73,8 +77,6 @@ class HEAD:
         # init head
         self._initialize_head()
         
-        # 
-        pass
     
     def _initialize_head(self) -> None:
          # init
@@ -190,6 +192,7 @@ class HEAD:
         
         
     def run(self, use_info_entropy=True):
+        """Run HEAD"""
         self.start_time = time()
         if use_info_entropy:
             logger.info(
@@ -314,7 +317,11 @@ class HEAD:
             for mol in suppl:
                 if mol is not None:
                     if add_Hs:
-                        mol = Chem.AddHs(mol, addCoords=True)
+                        try:
+                            mol = Chem.AddHs(mol, addCoords=True)
+                        except RuntimeError:  # catch RuntimeError: Pre-condition Violation
+                            molecules.append(None)
+                            continue
                 molecules.append(mol)    
         elif file_extension == "csv":
             mol_df = pd.read_csv(file_path)
@@ -339,6 +346,7 @@ class HEAD:
         
     
     def write_report(self, output_csv="/HEAD_result.csv"):
+        """Save HEAD results to csv file"""
         res=[]
         for i in range(self.num_mols):
             # [mol_id, invalidity, invalid atoms, atomic energies, hes, atom types, information entropy, self.information_entropy_invalid_ids[i]]
@@ -366,6 +374,7 @@ class HEAD:
     
     
     def plot(self, index=0, save_fig=False, fig_path=None):
+        """Plot HEAD results at atomic-level"""
         if self.invalid[index] is not None:
             irrat_index = [irrat[0] for irrat in self.invalid[index]]
         else:
@@ -390,20 +399,19 @@ class HEAD:
         plt.bar(np.array(irrat_index)-1, irrat_e, edgecolor='k', color='#E57B7F')
         
         plt.xticks(xs, labels, rotation=90)
-        plt.ylabel('Atomic energy (kcal/mol)', fontsize=15)
+        plt.ylabel('Atomic Energy (kcal/mol)', fontsize=15)
         
         fig.tight_layout()
         plt.grid(which='major')
         plt.show()
         if save_fig:
             if fig_path is None:
-                fig_path = f"HEAD_fig_{0}.png"
+                fig_path = f"HEAD_fig_{index}.png"
                 
             plt.savefig(fig_path, dpi=300)
+            logger.info(f"The HEAD plot was saved to {fig_path}.")
                 
-        
-        
-        
+
 # convert unit
 def ev_to_hartree(energy):
     return energy/27.211396641308  
@@ -415,26 +423,134 @@ def hartree_to_kcal_per_mol(energy):
     return energy * 627.509608
 
 def test_case():
-    # log settings
-    formatter = logging.Formatter(fmt="%(asctime)s - %(levelname)s - %(message)s", datefmt="%m/%d/%Y %H:%M:%S")
-    stream_handler = logging.StreamHandler()
-    stream_handler.setFormatter(formatter)
-    logger.setLevel("INFO")
-    logger.addHandler(stream_handler)
-    
     head = HEAD(
         file_path="/home/jovyan/atomic_energy_metric/paper_data/model_comparison/GM4K_final.csv",
         csv_column="conformer_sdf",  
-        gpu=1
+        gpu=0
     )
     
     head.run(use_info_entropy=True)
     head.write_report()
     
+
+def main(args):
+    extention = args.file_path.split('.')[-1].lower()
     
+    if extention == 'csv':
+        if args.csv_column is None:
+            raise RuntimeError("Please provide csv column name that stores sdf string when using csv as an input.")
+        else:
+            head = HEAD(
+                file_path=args.file_path,
+                csv_column=args.csv_column,  
+                gpu=args.gpu,
+                add_Hs=args.add_Hs,
+                remove_Hs=args.remove_Hs,
+                sanitize=args.sanitize
+            )
+    else:
+        head = HEAD(
+                file_path=args.file_path,
+                gpu=args.gpu,
+                add_Hs=args.add_Hs,
+                remove_Hs=args.remove_Hs,
+                sanitize=args.sanitize
+        )
     
-def main():
-    pass
+    if args.not_use_info_entropy:
+        head.run(use_info_entropy=False)
+    else:
+        head.run(use_info_entropy=True)
+    
+    if args.write_report:
+        head.write_report(output_csv=args.output_csv)
+    
+    if args.plot:
+        head.plot(
+            index=args.plot_index,
+            save_fig=True,
+            fig_path=args.fig_save_to_path
+        )
+    
 
 if __name__ == "__main__":
-    test_case()
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--file_path",
+        default=None,
+        type=str,
+        help="The path that contains input molecule conformations, support: .sdf, .pdb, .csv. When using csv file, the conformation should be stored as sdf string, and the column name should be provided.",
+    )
+    parser.add_argument(
+        "--csv_column",
+        default=None,
+        type=str,
+        help="The column name that specifies location of sdf strings stored in csv file. This is only working when using csv file as input."
+    )
+    
+    parser.add_argument(
+        "--add_Hs",
+        action="store_true",
+        help="Add Hydrogen atoms by RDKit if necessary. Note, this function removes the original Hydrogens by default.",
+    )
+
+    parser.add_argument(
+        "--remove_Hs",
+        action="store_true",
+        help="Whether to remove Hydrogens when loading conformations. **HEAD requires each input conformation with correct Hydrogen atoms provided.",
+    )
+    
+    parser.add_argument(
+        "--sanitize",
+        action="store_true",
+        help="Whether to use RDKit sanitiziation when loading conformations.",
+    )
+
+    parser.add_argument(
+        "--gpu",
+        default=0,
+        type=int,
+        help="Specify the GPU to run, default cuda:0 if cuda is available.",
+    )
+    
+    parser.add_argument(
+        "--not_use_info_entropy",
+        action="store_false",
+        help="Whether to use information entropy rules as a supplementary for HEAD evaluation.",
+    )
+    
+    parser.add_argument(
+        "--write_report",
+        action="store_true",
+        help="Whether to use RDKit sanitiziation when loading conformations.",
+    )
+    
+    parser.add_argument(
+        "--output_csv",
+        default="./HEAD_result.csv",
+        type=str,
+        help="The path for saving HEAD results."
+    )
+
+    parser.add_argument(
+        "--plot",
+        action="store_true",
+        help="Whether to plot atomic-level HEAD result for given conformation index.",
+    )
+    
+    parser.add_argument(
+        "--plot_index",
+        default=0,
+        type=int,
+        help="Which conformation to plot.",
+    )
+    
+    parser.add_argument(
+        "--fig_save_to_path",
+        default=None,
+        type=str,
+        help="Save the plot to the given figure path.",
+    )
+    
+    args = parser.parse_args()
+    main(args)

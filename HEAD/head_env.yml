@@ -1,0 +1,15 @@
+name: head_env
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pandas
+  - numpy
+  - pytorch=1.12.1
+  - matplotlib
+  - scipy
+  - pip:
+    - rdkit==2023.9.4
+    - lark==1.1.9
