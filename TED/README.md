@@ -1,8 +1,8 @@
-we have two model for inference  
-one input is multiple conformation, the model name is 'base_model_with_xtb_dft_finetuning.h5'  
-another input is one conformation ,the model name is 'augmentation_xtb_dft_fine_tune_model.h5'  
+we have two models for inference  
+first model input is multiple conformations, the model name is 'base_model_with_xtb_dft_finetuning.h5'  
+another model input is one conformation ,the model name is 'augmentation_xtb_dft_fine_tune_model.h5'  
 
-# first model run with those configurations
+# first model run with configurations
 environment configurations from sw_torsion_dnn/requirements.txt.  
 model url:  
 https://stonewise-lingo3dmol-public.s3.cn-northwest-1.amazonaws.com.cn/base_model_with_xtb_dft_finetuning.h5  
@@ -17,7 +17,8 @@ copy train_valid_scale.pkl /home/train_test_data
 cd inference_multiply_conformation  
 python run_with_merge_multiply_conformation.py --data-path /home/test_data_multiple_conformations.csv --out-path /home/out.csv  
 ```
-# second model run with those configurations
+# second model run with  configurations
+environment configurations from sw_torsion_dnn/requirements.txt.  
 model url:  
 https://stonewise-lingo3dmol-public.s3.cn-northwest-1.amazonaws.com.cn/augmentation_xtb_dft_fine_tune_model.h5    
 https://stonewise-lingo3dmol-public.s3.cn-northwest-1.amazonaws.com.cn/train_valid_scale.pkl   
@@ -33,7 +34,7 @@ python run_with_merge_one_conformation.py --data-path /home/test_data_one_confor
 ```
 input path is .csv,the row is conformation,dihedral  
 dihedral format:5-8-9-10  
-conformation name is unique,if have multiple conformations name like base-name_1,test_base-name_2.  
+conformation name is unique,if have multiple conformations name like base-name_1,base-name_2.  
 '_'is used for label the same molecular different conformation. so the base-name should not include '_'  
 base_mame is the mol_id  
 
