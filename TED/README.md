@@ -1,8 +1,8 @@
 # Torsional-energy descriptor
 TED (torsional energy descriptor), is mainly composed by a deep learning-based torsion energy prediction model (referred to as the TED-Model henceforth).  
-we have two models for inference:  
-first model input is multiple conformations, the model name is 'base_model_with_xtb_dft_finetuning.h5'.  
-another model input is one conformation ,the model name is 'augmentation_xtb_dft_fine_tune_model.h5'.  
+We have two models for inference:  
+1  The first model takes multiple conformations as input. The model is named base_model_with_xtb_dft_finetuning.h5.  
+2  The second model takes a single conformation as input. The model is named augmentation_xtb_dft_fine_tune_model.h5.  
 ##  model 1
 ### environment configurations:  
 sw_torsion_dnn/requirements.txt.
