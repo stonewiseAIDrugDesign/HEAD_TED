@@ -1,0 +1,7 @@
+python=3.9
+pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple rdkit==2023.3.2
+pip install pandas pyarrow psutil requests -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install scikit-learn -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install protobuf==3.20.* -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install tensorflow-cpu==2.7.0 -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install tensorflow-addons==0.15.0 -i https://pypi.tuna.tsinghua.edu.cn/simple
