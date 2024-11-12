@@ -36,22 +36,26 @@ cd inference_one_conformation
 python run_with_merge_one_conformation.py --data-path /home/test_data_one_conformation.csv --out-path /home/out.csv  
 ```
 ## Description of input 
-input path is .csv,the row is conformation,dihedral  
+The input is csv format,the column names is:conformation,dihedral  
 dihedral format:5-8-9-10  
-conformation name is unique,if have multiple conformations name like base-name_1,base-name_2.  
-'_'is used for label the same molecular different conformation. so the base-name should not include '_'  
-base_mame is the mol_id  
+The ID of a conformation must be unique. If a molecule has multiple conformations, they should be named as base-name_0, base-name_1, etc  
+The underscore (_) is used to label different conformations of the same molecule, so the base-name should not contain an underscore  
+base_mame is the molecule id  
 ## Description of output
-the output is csv format. the column names is: mol_id,unique_key,energy  
-mol_id is conformation id, the unique_key is consisted of 'mol_id','__' and 'dihedral_value',format is: 
-'mol_id__dihedral_value'  
+The output is csv format. the column names is: mol_id,unique_key,energy  
+The mol_id represents the molecular ID.  
+The unique_key is composed of mol_id, double underscores (__), and dihedral_value, formatted as:   
+mol_id__dihedral_value  
+The energy represents the relative energy for each dihedral, with the minimum energy set to zero.  
 ## Conformation generation method
-get the multiple conformations have two methods
-one is Schrodinger confgenx   
+There are two methods to obtain multiple conformations:  
+1.  Schrodinger ConfGenX  
+2.  OpenBabel  
+### ConfGenX cmd:  
 ```
 confgenx {input.mae} -m {conformation_size} -LOCAL -HOST localhost:32  -NJOBS 32 -optimize -force_field OPLS3e -WAIT
 ```
-another is openbabel
+### Openbabel cmd:  
 ```
 obabel {input.sdf} -O {output.sdf} --confab --xcutoff 0.5 --ecutoff 30 --conf {conformation_size}  
 ```
