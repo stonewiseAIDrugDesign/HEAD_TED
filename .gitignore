@@ -1,0 +1,132 @@
+e# Created by .ignore support plugin (hsz.mobi)
+### Java template
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Python Runtime Files
+__pycache__
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+### Windows template
+# Windows thumbnail cache files
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+### macOS template
+*.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+
+# Thumbnails
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+### Example user template template
+### Example user template
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+target/
+venv/
+dependency.txt
+
+# VS Code files
+sar-3d-pharam.code-workspace
+.vscode
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints
+
+# Vim swp files
+.*.swp
+
+# MISC
+src/.history
+.history
+
+# Security data
+data/guangzheng_test
+data/label_data/*test*
+data/label_data/all_*.test.csv.gz
+src/evaluation/stream_dataset
+
+# Data
+data/label_data
+
+# feature data
+data
+
+# Model test result
+src/model_*/test_result
+src/evaluation/*results
+src/evaluation/sent_models
+src/model_2d_xgb/model
+
+# FLASK files
+src/UI/uploads/
+
+# Level db
+*.db
+
+# tmp files
+t1.ipynb
+#*.csv
+#*.CSV
+*.resp
+
+# Molecule files
+*.smi
+*.sdf
