@@ -16,8 +16,8 @@ TED/test_data_multiple_conformations.csv
 mkdir /home/train_test_data  
 cp base_model_with_xtb_dft_finetuning.h5 /home/train_test_data  
 cp train_valid_scale.pkl /home/train_test_data  
-cd inference_multiply_conformation  
-python run_with_merge_multiply_conformation.py --data-path /home/test_data_multiple_conformations.csv --out-path /home/out.csv  
+cd TED/inference_multiply_conformation  
+python run_with_merge_multiply_conformation.py --data-path /home/test_data_multiple_conformations.csv --out-path /home/multiple_conformation_out.csv  
 ```
 ## model 2
 ### environment configurations:  
@@ -32,8 +32,8 @@ TED/test_data_one_conformation.csv
 mkdir /home/train_test_data  
 cp augmentation_xtb_dft_fine_tune_model.h5 /home/train_test_data  
 cp train_valid_scale.pkl /home/train_test_data  
-cd inference_one_conformation  
-python run_with_merge_one_conformation.py --data-path /home/test_data_one_conformation.csv --out-path /home/out.csv  
+cd TED/inference_one_conformation  
+python run_with_merge_one_conformation.py --data-path /home/test_data_one_conformation.csv --out-path /home/one_conformation_out.csv
 ```
 ## Description of input 
 The input is csv format,the column names is:conformation,dihedral  
