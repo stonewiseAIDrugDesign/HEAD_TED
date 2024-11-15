@@ -1,6 +1,6 @@
 # Assessing Conformation Validity and Rationality of Deep Learning-Generated 3D Molcules
 
-**Paper preprint on [BioRxiv](https://www.biorxiv.org/content/10.1101/2024.11.10.622844v1)**
+**Paper preprint on [arXiv]()**
 
 Recent advancements in artificial intelligence (AI) have opened new frontiers in 3D molecule generation, with applications in drug design, materials science, and more. However, evaluating the quality of generated 3D conformations remains challenging due to limitations in current methods. This project presents an open-source solution to address these limitations by combining speed with quantum mechanical (QM)-level accuracy.
 
@@ -45,7 +45,17 @@ This evaluation framework has been applied to five recent AI-driven models for 3
 ## Citation
 If you find our code useful, please cite:
 
-more to come...
+```
+@article {Fan2024.11.10.622844,
+	title = {Assessing Conformation Validity and Rationality of Deep Learning-Generated 3D Molecules},
+	author = {Fan, Fan and Xi, Bin and Meng, Xianghu and Wang, Han and Zhang, Bowen and Xu, Qingbo and Feng, Wei and Wang, Xiaoman and Zhang, Hongbo and Zhou, Feng and Liu, Zhenming and Zhou, Wenbiao and Huang, Bo},
+	year = {2024},
+	doi = {10.1101/2024.11.10.622844},
+	URL = {https://www.biorxiv.org/content/early/2024/11/11/2024.11.10.622844},
+	eprint = {https://www.biorxiv.org/content/early/2024/11/11/2024.11.10.622844.full.pdf},
+	journal = {bioRxiv}
+}
+```
 
 ## License
 This project is licensed under the MIT License.
