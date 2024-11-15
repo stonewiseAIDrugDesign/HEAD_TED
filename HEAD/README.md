@@ -15,10 +15,6 @@ conda env create -f head_env.yml
 conda activate head_env
 ```
 
-### Pytorch installation
-```bash
-conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit=11.6 -c pytorch -c conda-forge
-```
 ## Running the Validity Test
 After installation, you can run the evaluation pipeline on your own dataset of generated molecules or replicate the experiments conducted in this study.
 
