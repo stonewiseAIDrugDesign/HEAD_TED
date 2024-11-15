@@ -40,7 +40,7 @@ See [TED](https://github.com/stonewiseAIDrugDesign/HEAD_TED/blob/main/TED/README
 To facilitate testing, example datasets are provided. You can also download the released GM5K, GM1K or generated molecules by each model via the link: to be uploaded.
 
 ## Applications and Validation
-This evaluation framework has been applied to five recent AI-driven models for 3D molecule generation and evaluated on 101 targets in the DUD-E dataset. The approach can be adapted to other datasets or AI models for molecule generation.
+This evaluation framework has been applied to five recent AI-driven models for 3D molecule generation and evaluated on 102 targets in the DUD-E dataset. The approach can be adapted to other datasets or AI models for molecule generation.
 
 ## Citation
 If you find our code useful, please cite:
