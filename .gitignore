@@ -129,4 +129,4 @@ t1.ipynb
 
 # Molecule files
 *.smi
-*.sdf
+#*.sdf

@@ -1,6 +1,6 @@
 # High-Energy Atom Detection (HEAD)
 
-**Paper preprint on [arXiv]()**
+**Paper preprint on [bioRxiv](https://www.biorxiv.org/content/10.1101/2024.11.10.622844v1)**
 
 HEAD utilizes an AI-derived force field ([ANI-2x](http://doi.org/10.1021/acs.jctc.0c00121) in this work) to identify atoms with elevated energy levels caused by implausible neighboring environments.
 
@@ -15,6 +15,10 @@ conda env create -f head_env.yml
 conda activate head_env
 ```
 
+### Pytorch installation
+```bash
+conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit=11.6 -c pytorch -c conda-forge
+```
 ## Running the Validity Test
 After installation, you can run the evaluation pipeline on your own dataset of generated molecules or replicate the experiments conducted in this study.
 
@@ -60,7 +64,9 @@ head.write_report(output_csv="./head_report.csv")
 # Plot the 0-th conformation evaluation result
 head.plot(index=0)
 ```
+Then, you should get something like this, which shows the atomic-level details of HEAD result. The red circled part of each conformation corresponds to the red bars in each bar plot.
 
+![Invalid Cases](../assets/invalid_cases.png "Invalid Cases")
 ---
 
 ### Method 2 (Command line)
@@ -73,7 +79,7 @@ Then, you should find the output report (HEAD_report.csv) and plot (HEAD_fig_0.p
 
 ## Speed
 
-When running HEAD for a large amount of molecule conformations, HEAD takes ***around 50 conformation per second*** on one single GPU (e.g., NVIDIA GeForce RTX 3090).
+When running HEAD for a large amount of molecule conformations, HEAD takes ***around 50 conformations per second*** on one single GPU (e.g., NVIDIA GeForce RTX 3090).
 
 ## About the HEAD report
 HEAD report stores molecule-level and atomic-level details for the evaluation. Please refer the following for the understanding of the report.
@@ -92,3 +98,5 @@ HEAD report stores molecule-level and atomic-level details for the evaluation. P
 - **information entropy**: the computed information entropy for the maximum subregion, this approach is ONLY a supplementrary for HEAD (see our paper for details).
 
 - **information entropy invalidity**: if 1, invalid conformation ONLY detected by information entropy approach, else 0.
+
+
