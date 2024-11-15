@@ -8,7 +8,7 @@ import math
 
 # from common import logger
 logger = logging.getLogger('Log')
-sch_gen_path = '/home/train_test_data/rdkit_base_dihedral'
+# sch_gen_path = '/home/train_test_data/rdkit_base_dihedral'
 
 molAtomMapNumberStr = 'molAtomMapNumber'
 
@@ -37,6 +37,8 @@ def convert_dihedral_to_25(res_predict_np):
 
 def udf_run(input_list_of_dict: list, output_cols: list, functionExtraParam: str):
     task_id = functionExtraParam.get('task_name', 'default_task_name')
+    base_local_path = functionExtraParam.get('model_path')
+    sch_gen_path = base_local_path + '/rdkit_base_dihedral'
     input_cols = ['unique_key', 'energy', 'feature_str', 'mol_id']
     start_time = time.time()
     if os.path.exists(sch_gen_path):
@@ -46,9 +48,9 @@ def udf_run(input_list_of_dict: list, output_cols: list, functionExtraParam: str
 
     logger.info(f"input_list sdf len:{len(input_list_of_dict)}")
     ###(feature_output_list_of_dict: list, input_cols: list, task_id: str):
-    gen_inference_data_numpy.main(input_list_of_dict, input_cols, task_id)
+    gen_inference_data_numpy.main(input_list_of_dict, input_cols, task_id, sch_gen_path)
     file_name = task_id
-    res_predict_np = evaluate_with_rdkit_attention.main(file_name)
+    res_predict_np = evaluate_with_rdkit_attention.main(file_name, base_local_path)
     ret_energy_dict = convert_dihedral_to_25(res_predict_np)
     ###mod_id,unique_key,energy
     output_list_of_dict = []

@@ -42,14 +42,14 @@ def choose_mol_id(all_id_dict):
     return ret_list
 
 
-base_lacal_path = '/home/train_test_data/rdkit_base_dihedral'
+# sch_gen_path = '/home/train_test_data/rdkit_base_dihedral'
 
 
 ### input_cols = ['unique_key', 'energy', 'feature_str', 'mol_id']
 ##unique_key,feature_str,energy
-def main(feature_output_list_of_dict: list, input_cols: list, task_id: str):
-    if not os.path.exists(base_lacal_path):
-        os.mkdir(base_lacal_path)
+def main(feature_output_list_of_dict: list, input_cols: list, task_id: str, sch_gen_path: str):
+    if not os.path.exists(sch_gen_path):
+        os.mkdir(sch_gen_path)
     only_one_set = set()
     all_id_dict = {}
     for temp_feature_dict in feature_output_list_of_dict:
@@ -90,8 +90,8 @@ def main(feature_output_list_of_dict: list, input_cols: list, task_id: str):
     test_y = np.concatenate((test_energy_y, test_id_y), axis=1)
     logger.info(f'test_y:{test_y.shape}')
     logger.info(f'test_x:{test_x.shape}')
-    np.save(f'{base_lacal_path}/{task_id}_y_test.npy', test_y)
-    np.save(f'{base_lacal_path}/{task_id}_X_test.npy', test_x)
+    np.save(f'{sch_gen_path}/{task_id}_y_test.npy', test_y)
+    np.save(f'{sch_gen_path}/{task_id}_X_test.npy', test_x)
 
 
 if __name__ == '__main__':

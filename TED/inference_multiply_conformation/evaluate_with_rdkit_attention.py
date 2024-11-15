@@ -6,21 +6,21 @@ from tensorflow_addons.layers import MultiHeadAttention
 import logging
 
 logger = logging.getLogger('Log')
-base_lacal_path = '/home/train_test_data'
+# base_local_path = '/home/train_test_data'
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
-def main(predict_name: str):
-    model_file = f'{base_lacal_path}/base_model_with_xtb_dft_finetuning.h5'
+def main(predict_name: str, base_local_path):
+    model_file = f'{base_local_path}/base_model_with_xtb_dft_finetuning.h5'
     model = tf.keras.models.load_model(model_file, custom_objects={'Addons>MultiHeadAttention': MultiHeadAttention})
     # model = tf.keras.models.load_model(model_file)
     valid_file_size = 8
     start_file_id = 8
-    test_data = np.load(f'{base_lacal_path}/rdkit_base_dihedral/{predict_name}_X_test.npy'
+    test_data = np.load(f'{base_local_path}/rdkit_base_dihedral/{predict_name}_X_test.npy'
                         f'')
-    test_id_data = np.load(f'{base_lacal_path}/rdkit_base_dihedral/{predict_name}_y_test.npy')
+    test_id_data = np.load(f'{base_local_path}/rdkit_base_dihedral/{predict_name}_y_test.npy')
 
-    with open(f'{base_lacal_path}/train_valid_scale.pkl', 'rb') as fptr:
+    with open(f'{base_local_path}/train_valid_scale.pkl', 'rb') as fptr:
         scaler = pickle.load(fptr)
     test_data = scaler.transform(test_data)
     test_data = test_data.reshape(int(test_data.shape[0] / 24), 24, 293)
@@ -42,7 +42,7 @@ def main(predict_name: str):
     test_id_data = test_id_data[:, 1]
     test_id_data = test_id_data.reshape(test_id_data.shape[0], 1)
     ret_y_pred = np.concatenate((y_pred, test_id_data), axis=1)
-    ret_file_path = f'{base_lacal_path}/rdkit_base_dihedral/{predict_name}_model_predict.npy'
+    ret_file_path = f'{base_local_path}/rdkit_base_dihedral/{predict_name}_model_predict.npy'
     np.save(ret_file_path, ret_y_pred)
     logger.info(f'return value is:{ret_y_pred.shape}')
     return ret_y_pred

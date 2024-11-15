@@ -108,8 +108,6 @@ def is_neutral(mol):
 
 
 """
-input_list 是conformer,dihedral,output
-
 ### input_cols:(conformer,dihedral,output) 
 ### output_cols: (sdf_id,energy,conformer_sdf)
 """
@@ -139,7 +137,7 @@ def udf_run(input_list_of_dict: list):
     pll_gen = functools.partial(get_conf_sdf_id, )
     pool = Pool(processes=cpu_num)
     result = pool.map(pll_gen, all_sdf_list)
-    pool.close()  # 关闭进程池，不再接受新的进程
+    pool.close()
     pool.join()
     lowest_energy_dict = {}
     for temp_en_list in result:

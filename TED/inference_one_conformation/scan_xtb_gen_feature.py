@@ -31,7 +31,6 @@ def get_feature_parallel(input_en):
     return ret_tuple
 
 
-#### sdf_id__角度,conformer_sdf
 def udf_run(input_list_of_dict: list):
     input_cols = ['sdf_id', 'conformer_sdf']
     output_cols = ['unique_key', 'energy', 'feature_str', 'mol_id']
@@ -58,7 +57,7 @@ def udf_run(input_list_of_dict: list):
     pll_gen = functools.partial(get_feature_parallel, )
     pool = Pool(processes=cpu_num)
     result = pool.map(pll_gen, all_sdf_list)
-    pool.close()  # 关闭进程池，不再接受新的进程
+    pool.close()
     pool.join()
     lowest_energy_dict = {}
     for temp_en in result:

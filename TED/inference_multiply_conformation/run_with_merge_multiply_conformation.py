@@ -75,6 +75,10 @@ def get_parser() -> argparse.ArgumentParser:
         "--out-path",
         help="out put data path,it is csv format,one row is mod_id,unique_key,energy",
     )
+    parser.add_argument(
+        "--model-path",
+        help="model file path, main model should be TensorFlow's h5 format while the scaaler model should be a .pkl"
+    )
     return parser
 
 
@@ -85,6 +89,7 @@ def run_the_service(args: argparse.Namespace) -> None:
     task_id = f'default_{unique_id}'
     functionExtraParam = {}
     functionExtraParam['task_name'] = task_id
+    functionExtraParam['model_path'] = args.model_path
     output_cols = ['mol_id', 'unique_key', 'energy']
     output_dict_list = udf_run(input_dict_list, output_cols, functionExtraParam)
     output_data_to_csv(args.out_path, output_dict_list)

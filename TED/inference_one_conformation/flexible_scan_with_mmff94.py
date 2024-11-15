@@ -89,12 +89,6 @@ def is_neutral(mol):
     total_formal_charge = sum([a.GetFormalCharge() for a in mol.GetAtoms()])
     return total_formal_charge == 0.0
 
-
-###输入是conformer,dihedral point.
-###返回的是conformer,dihedral_point,scan xyz_坐标
-
-###todo input_cols: conformer, dihedral
-### todo output_cols:conformer,dihedral,output)
 def udf_run(input_list_of_dict: list):
     input_cols = ['conformer', 'dihedral']
     output_cols = ['conformer', 'dihedral', 'output']
@@ -121,7 +115,7 @@ def udf_run(input_list_of_dict: list):
     pll_gen = functools.partial(get_conf_sdf_id)
     pool = Pool(processes=cpu_num)
     result = pool.map(pll_gen, all_sdf_list)
-    pool.close()  # 关闭进程池，不再接受新的进程
+    pool.close()
     pool.join()
     for temp_en in result:
         if temp_en is None:

@@ -1,61 +1,69 @@
-# Torsional-energy descriptor
-TED (torsional energy descriptor), is mainly composed by a deep learning-based torsion energy prediction model (referred to as the TED-Model henceforth).  
-We have two models for inference:  
-1.  The first model takes multiple conformations as input. The model is named base_model_with_xtb_dft_finetuning.h5.  
-2.  The second model takes a single conformation as input. The model is named augmentation_xtb_dft_fine_tune_model.h5.  
-##  model 1
-### environment configurations:  
-sw_torsion_dnn/requirements.txt.
-### model url:  
-https://stonewise-lingo3dmol-public.s3.cn-northwest-1.amazonaws.com.cn/base_model_with_xtb_dft_finetuning.h5  
-https://stonewise-lingo3dmol-public.s3.cn-northwest-1.amazonaws.com.cn/train_valid_scale.pkl  
-### example input file:  
-TED/test_data_multiple_conformations.csv  
-### run script:  
+# Torsional-Energy Descriptor (TED)
+**Paper preprint on [bioRxiv](https://www.biorxiv.org/content/10.1101/2024.11.10.622844v1)**
+
+TED is primarily powered by a deep learning-based torsion energy prediction model, referred to as the TED-Model.
+
+We provide two distinct models for inference, each tailored to different use cases and types of input data.
+1. The **Base-model** is trained using a combination of GFN2-xTB and DFT (Density Functional Theory) data, processing multiple numbers of initial conformations for each torsion fragments as inputs. Download Links:
+
+    **Main Model:** [base_model_with_xtb_dft_finetuning.h5](https://stonewise-lingo3dmol-public.s3.cn-northwest-1.amazonaws.com.cn/base_model_with_xtb_dft_finetuning.h5) \
+    **Data Scaling information:** [train_valid_scale.pkl](https://stonewise-lingo3dmol-public.s3.cn-northwest-1.amazonaws.com.cn/train_valid_scale.pkl)
+2. The Augmented-model is an adaptation of the base model that incorporates data augmentation, processing single initial conformation of each torsion fragments as input. Link for DownLoad:
+
+    **Main Model:** [augmentation_model_with_xtb_dft_finetuning.h5](https://stonewise-lingo3dmol-public.s3.cn-northwest-1.amazonaws.com.cn/augmentation_xtb_dft_fine_tune_model.h5) \
+    **Data Scaling information:** [train_valid_scale.pkl](https://stonewise-lingo3dmol-public.s3.cn-northwest-1.amazonaws.com.cn/train_valid_scale.pkl)
+
+## Create Environment
+Pre-requisitions are listed in `requirements.txt`
+## Running the Test
+### Run Test
+1. Download the **Base-model** or **Augmented-model**.
+2. Place the downloaded files into a new folder. Ensure the filenames remain unchanged. Use Augmented-model as example.
 ```
-mkdir /home/train_test_data  
-cp base_model_with_xtb_dft_finetuning.h5 /home/train_test_data  
-cp train_valid_scale.pkl /home/train_test_data  
-cd TED/inference_multiply_conformation  
-python run_with_merge_multiply_conformation.py --data-path /home/test_data_multiple_conformations.csv --out-path /home/multiple_conformation_out.csv  
+mkdir /home/jovyan/trained_model_one_conformation
+cp augmentation_xtb_dft_fine_tune_model.h5 /home/jovyan/trained_model_one_conformation/
+cp train_valid_scale.pkl /home/jovyan/trained_model_one_conformation/
 ```
-## model 2
-### environment configurations:  
-sw_torsion_dnn/requirements.txt.    
-### model url:  
-https://stonewise-lingo3dmol-public.s3.cn-northwest-1.amazonaws.com.cn/augmentation_xtb_dft_fine_tune_model.h5    
-https://stonewise-lingo3dmol-public.s3.cn-northwest-1.amazonaws.com.cn/train_valid_scale.pkl   
-### example input file:  
-TED/test_data_one_conformation.csv  
-### run script:  
+3. Run the command for test and enjoy! :)
 ```
-mkdir /home/train_test_data  
-cp augmentation_xtb_dft_fine_tune_model.h5 /home/train_test_data  
-cp train_valid_scale.pkl /home/train_test_data  
-cd TED/inference_one_conformation  
-python run_with_merge_one_conformation.py --data-path /home/test_data_one_conformation.csv --out-path /home/one_conformation_out.csv
+python3 ted.py --file_path examples/TED_example.csv --preparation_num_proc 20 --id_column mol_id --sdf_column optimized_sdf --augmentation_model --model_path /home/jovyan/trained_model_one_conformation --out_csv test_output.csv
 ```
-## Description of input 
-The input is csv format,the column names is:conformation,dihedral  
-dihedral format:5-8-9-10  
-The ID of a conformation must be unique. If a molecule has multiple conformations, they should be named as base-name_0, base-name_1, etc  
-The underscore (_) is used to label different conformations of the same molecule, so the base-name should not contain an underscore  
-base_mame is the molecule id  
-## Description of output
-The output is csv format. the column names is: mol_id,unique_key,energy  
-The mol_id represents the molecular ID.  
-The unique_key is composed of mol_id, double underscores (__), and dihedral_value, formatted as:   
-mol_id__dihedral_value  
-The energy represents the relative energy for each dihedral, with the minimum energy set to zero.  
-## Conformation generation method
-There are two methods to obtain multiple conformations:  
-1.  Schrodinger ConfGenX  
-2.  OpenBabel  
-### ConfGenX cmd:  
-```
-confgenx {input.mae} -m {conformation_size} -LOCAL -HOST localhost:32  -NJOBS 32 -optimize -force_field OPLS3e -WAIT
-```
-### Openbabel cmd:  
-```
-obabel {input.sdf} -O {output.sdf} --confab --xcutoff 0.5 --ecutoff 30 --conf {conformation_size}  
-```
+
+### Important Notes Before Starting Your Own Job
+The input CSV file must contain at least one column with the conformations of each molecule in **SDF V2000** format. Each cell should contain only one conformation. If a column for unique identifiers is provided, please ensure that the identifiers do not contain underscores (`_`).
+
+### Initial Conformation of Torsion Fragments
+The provided pipeline has already integrated two methods for generating the initial conformations for torsion fragments.
+
+1. OpenBabel
+2. Schrodinger's ConfGen & ConfGenX
+
+If user provide the path to the Schrodinger Series Executable via argument `--confgen_path` and `--structconvert`(optional, used to convert .maegz to readable .sdf files, this will be automatically detected if installed in the same directory as ConfGen), the script will use ConfGen & ConfGenX. If these paths are not provided, OpenBabel will be used instead. 
+
+
+## Speed
+When using the TED-Model for inference, only CPUs are required. The Augmented-Model takes approximately 440 seconds to process 2,000 torsion fragments on a machine with 32 cores, whereas the Base-Model takes around 1,680 seconds. Note that the majority of the processing time is spent on the initial conformation sampling. If OpenBabel is used for conformation generation, the overall time required will be approximately halved.
+
+## About the TED report
+### Brief Result
+The output of the **TED-Model** is a `.csv` file containing two columns: `id` and `TED_result`. 
+
+- If the `--id_column` argument is not provided, the `id` in the output CSV will be set to the index of the input CSV.
+- If the `--id_column` argument is provided, the `id` will correspond to the values in the specified column.
+
+The `TED_result` column contains flags indicating whether the molecular conformation passed the evaluation:
+- `0` indicates the conformation passed.
+- `1` indicates the conformation did not pass.
+- `2` indicates the molecule could not be processed.
+
+### Detailed Outputs
+If the `--detailed_output` argument is provided, detailed information for each dihedral angle of every query molecule will be included and saved as a `.json` file. This file will have the same filename as the brief output CSV. 
+
+Each record for a dihedral angle will include:
+- A flag indicating whether the evaluation passed.
+- A quad joined by `-` representing the atom indices that define the specific dihedral in the query molecule.
+- The SMILES string of the torsion fragment being investigated.
+- The degree of the dihedral angle.
+- The predicted relative energy (with the minimum energy set to zero).
+
+An example of the detailed output can be found in `examples/TED_example_detailed_output.json`.

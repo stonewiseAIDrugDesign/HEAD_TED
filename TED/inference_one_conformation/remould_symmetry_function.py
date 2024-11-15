@@ -5,13 +5,10 @@ from rdkit.Chem import AllChem
 from rdkit.Geometry import Point3D
 
 
-###todo 测试暂时用id-1
 def get_torsion_oeatom_list(mol, tag="TORSION_ATOMS_FRAGMENT"):
     torsion_list = mol.GetProp(tag)
     try:
         torsion_atoms_idx = list(map(int, torsion_list.split('-')))
-        # torsion_atoms_idx = list(map(lambda idx: idx - 1, torsion_atoms_idx
-        #                              ))
         return torsion_atoms_idx
     except Exception as e:
         print(e)
@@ -19,19 +16,13 @@ def get_torsion_oeatom_list(mol, tag="TORSION_ATOMS_FRAGMENT"):
 
 
 def deep_traversal(molecule, atom_index, visited_atoms):
-    # 检查是否已经访问过这个原子
     if atom_index in visited_atoms:
         return
 
-    # 访问当前原子
     visited_atoms.add(atom_index)
     atom = molecule.GetAtomWithIdx(atom_index)
-    # print(f"Visiting atom {atom.GetSymbol()} (index {atom_index})")
-
-    # 获取与当前原子相连的原子
     for neighbor in atom.GetNeighbors():
         neighbor_index = neighbor.GetIdx()
-        # 递归访问相邻的原子
         deep_traversal(molecule, neighbor_index, visited_atoms)
 
 
@@ -352,11 +343,11 @@ class SymmetryFunction:
 
         Functional form is described in the DFT-NN review article by Behler, page 30, equations 25 and 26
         '''
-        ###算法中心分子，只有一个原子
+        
         refMol = self.GetTorsionCenterAsOEMol(envMol)
-        ### 二面角的键
+        
         _, b, c, _ = get_torsion_oeatom_list(envMol)
-        ###算法中心原子i
+        
         refAtom = refMol.GetAtomWithIdx(0)
 
         rsf = []
@@ -435,16 +426,10 @@ class SymmetryFunction:
 
 def get_sf_elements(mol):
     sfObj = SymmetryFunction()
-    # oechem.OEAssignHybridization(mol)
-    """
-    rsf 是距离,asf是角度
-    """
     rsf, asf = sfObj.CalculateSymmetryFunction(mol)
-    #print(f'distance:{rsf}')
-    #print(f'angle:{asf}')
     tsf1 = sfObj.CalculateTorsionSymmetryFunction(mol, 1)
     tsf2 = sfObj.CalculateTorsionSymmetryFunction(mol, 2)
-    #print(f'torsion:{tsf2}')
+
     tsf = []
     for elem1, elem2 in zip(tsf1, tsf2):
         tsf.append(elem1 + elem2)
@@ -461,8 +446,6 @@ def run_main():
     mol_list = Chem.ForwardSDMolSupplier(sdf_file_path, removeHs=False)
     for temp_mol in mol_list:
         features = get_sf_elements(temp_mol)
-        # for temp_one_feature in features:
-        #     print(f'{temp_one_feature}')
         break
 
 
