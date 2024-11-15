@@ -82,7 +82,7 @@ HEAD report stores molecule-level and atomic-level details for the evaluation. P
 - **invalidity**: whether this conformation is valid or not. 
     - 0: valid conformation
     - 1: invalid conformation
-    - -1: unsupported conformation that may contain elements out of {H, C, N, O, F, S, Cl} OR unexpected error during loading
+    - -1: unsupported conformation that may contain elements out of {H, C, N, O, F, S, Cl} OR encounter unexpected error during loading
 
 - **invalid atoms**: contains all atomic-level invalid details if the current conformation is detected as invalid, else None. for example,
     - [(2, 'C', 40.962)]: indicates the No.2 (the index starts from 1) Carbon atom is detected as invalid due to the high-energy response 40.962 kcal/mol (Note that, this energy is only a reference, that may not be precise)
