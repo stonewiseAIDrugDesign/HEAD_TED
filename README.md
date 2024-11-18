@@ -13,7 +13,7 @@ Most current evaluation methods for AI-generated 3D molecules rely either on emp
 
 ![Schematic plot](./assets/schematic_plot.svg "HEAD & TED")
 
-Our method has been tested on five prominent AI-driven 3D molecule generation models, namely [Lingo3DMolv2](https://www.nature.com/articles/s42256-023-00775-6), [Pocket2Mol](https://arxiv.org/abs/2205.07249), [PocketFlow](https://www.nature.com/articles/s42256-024-00808-8), [TargetDiff](https://arxiv.org/abs/2303.03543) and [PMDM](https://www.nature.com/articles/s41467-024-46569-1) across 101 targets in the Directory of Useful Decoys-Enhanced (DUD-E) dataset. 
+Our method has been tested on five prominent AI-driven 3D molecule generation models, namely [Lingo3DMolv2](https://www.nature.com/articles/s42256-023-00775-6), [Pocket2Mol](https://arxiv.org/abs/2205.07249), [PocketFlow](https://www.nature.com/articles/s42256-024-00808-8), [TargetDiff](https://arxiv.org/abs/2303.03543) and [PMDM](https://www.nature.com/articles/s41467-024-46569-1) across 102 targets in the Directory of Useful Decoys-Enhanced (DUD-E) dataset. 
 
 
 

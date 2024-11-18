@@ -24,12 +24,12 @@ We provide the following code snippet for the detailed usage of HEAD. Or you can
 
 ### Method 1 (Code snippet)
 
-Prepare an input file that contains one or multiple molecule conformations. **Note** that, HEAD requires conformations with Hydrogen atoms, if the input file does not contain Hydrogens, please set the `add_Hs` to `True`.
+Prepare an input file that contains one or multiple molecule conformations. **Note** that, HEAD requires conformations with Hydrogen atoms, if the input file does not contain Hydrogens, please set the `add_Hs` to `True` and we use RDKit to complement Hydrogens. 
 
 ```python
 from head import HEAD
 
-# Input a csv that stores sdf strings with a column name, e.g., "conformer_sdf"
+# Input a csv with each row storing one conformation of sdf string, and specify the column name, e.g., "conformer_sdf"
 head = HEAD(
     file_path="examples/example.csv",
     csv_column="conformer_sdf",  # the field that stores sdf string of input molecules
@@ -39,7 +39,7 @@ head = HEAD(
 Or provide an `.sdf` file,
 
 ```python
-# Or input an sdf file that stores one of many molecule conformations
+# Or input an sdf file that stores one or many molecule conformations
 head = HEAD(
     file_path="examples/example.sdf",
 )
