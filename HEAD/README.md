@@ -2,7 +2,7 @@
 
 **Paper preprint on [bioRxiv](https://www.biorxiv.org/content/10.1101/2024.11.10.622844v1)**
 
-HEAD utilizes an AI-derived force field ([ANI-2x](http://doi.org/10.1021/acs.jctc.0c00121) in this work) to identify atoms with elevated energy levels caused by implausible neighboring environments.
+HEAD utilizes an AI-derived force field (ANI-2x (http://doi.org/10.1021/acs.jctc.0c00121) in this work) to identify atoms with elevated energy levels caused by implausible neighboring environments.
 
 ## Create Environment
 
@@ -16,9 +16,9 @@ conda activate head_env
 ```
 
 ## Running the Validity Test
-After installation, you can run the evaluation pipeline on your own dataset of generated molecules or replicate the experiments conducted in this study.
+After installation, you can run the evaluation pipeline on your own dataset of generated molecules or repeat the experiments conducted in this study.
 
-We provide the following code snippet for the detailed usage of HEAD. Or you can directly run it by command lines.
+Below is a code snippet demonstrating the detailed usage of the HEAD toolkit. Alternatively, you can execute it directly using command line commands.
 
 ---
 
@@ -29,17 +29,18 @@ Prepare an input file that contains one or multiple molecule conformations. **No
 ```python
 from head import HEAD
 
-# Input a csv with each row storing one conformation of sdf string, and specify the column name, e.g., "conformer_sdf"
+#  Input a csv that stores SDF strings with a column name, e.g., "conformer_sdf". All the content of an .sdf file for a conformation is treated as the SDF string for that specific conformation. For more details, please refer to examples/examples.csv
 head = HEAD(
     file_path="examples/example.csv",
-    csv_column="conformer_sdf",  # the field that stores sdf string of input molecules
+    csv_column="conformer_sdf",  # the field that stores SDF string of input molecules
+    # add_Hs =True, # if the input conformation does not contain the full hydrogen information
 )
 ```
 
-Or provide an `.sdf` file,
+Alternatively, you can provide an `.sdf` file,
 
 ```python
-# Or input an sdf file that stores one or many molecule conformations
+# Alternatively, you can input an sdf file that stores one or many molecule conformations
 head = HEAD(
     file_path="examples/example.sdf",
 )
@@ -60,7 +61,7 @@ head.write_report(output_csv="./head_report.csv")
 # Plot the 0-th conformation evaluation result
 head.plot(index=0)
 ```
-Then, you should get something like this, which shows the atomic-level details of HEAD result. The red circled part of each conformation corresponds to the red bars in each bar plot.
+Then, you should obtain results similar to the example below, which displays the atomic-level details of the HEAD results. The sections circled in red in each conformation correspond to the red bars in the accompanying bar plots.
 
 ![Invalid Cases](../assets/invalid_cases.png "Invalid Cases")
 ---
@@ -71,28 +72,28 @@ Run the following command,
 ```bash
 python head.py --file_path examples/example.sdf --write_report --plot
 ```
-Then, you should find the output report (HEAD_report.csv) and plot (HEAD_fig_0.png) stored under this directory.
+Then, you should find the output report (`HEAD_report.csv`) and plot (`HEAD_fig_0.png`) stored under this directory.
 
 ## Speed
 
 When running HEAD for a large amount of molecule conformations, HEAD takes ***around 50 conformations per second*** on one single GPU (e.g., NVIDIA GeForce RTX 3090).
 
 ## About the HEAD report
-HEAD report stores molecule-level and atomic-level details for the evaluation. Please refer the following for the understanding of the report.
+The HEAD report stores both molecule-level and atomic-level information. Please refer the following sections for a better understanding of the report.
 - **invalidity**: whether this conformation is valid or not. 
-    - 0: valid conformation
-    - 1: invalid conformation
-    - -1: unsupported conformation that may contain elements out of {H, C, N, O, F, S, Cl} OR encounter unexpected error during loading
+    - `0`: Valid conformation
+    - `1`: Invalid conformation
+    - `-1`: Unsupported conformation, which may contain elements outside of {H, C, N, O, F, S, Cl}, or may have encountered an unexpected error during loading
 
-- **invalid atoms**: contains all atomic-level invalid details if the current conformation is detected as invalid, else None. for example,
-    - [(2, 'C', 40.962)]: indicates the No.2 (the index starts from 1) Carbon atom is detected as invalid due to the high-energy response 40.962 kcal/mol (Note that, this energy is only a reference, that may not be precise)
+- **invalid atoms**: Contains all atomic-level invalid details if the current conformation is detected as invalid; Otherwise, it is `None`. for example,
+    - `[(2, 'C', 40.962)]`: This indicates that the No.2 (index starts from 1) Carbon atom is detected as invalid due to the high-energy response `40.962` kcal/mol. (Note that this energy is only a reference and may not be precise.)
 
-- **HES**: High-Energy Score decribes the invalidity of this conformation. It is zero if the conformation is valid, else non-negative vlaue. The greater the HES is, the more problematic the conformation is.
+- **HES**: Decribes the level of invalidity of this conformation. It is zero if the conformation is valid; Otherwise, it is a non-negative vlaue. The greater the HES is, the more problematic the conformation.
 
-- **atom types**: stores the atom types for an input conformation.
+- **atom types**: Stores the atom types for an input conformation.
 
-- **information entropy**: the computed information entropy for the maximum subregion, this approach is ONLY a supplementrary for HEAD (see our paper for details).
+- **information entropy**: The computed information entropy for the maximum subregion. This approach is ONLY supplementrary for HEAD (see our paper for details).
 
-- **information entropy invalidity**: if 1, invalid conformation ONLY detected by information entropy approach, else 0.
+- **information entropy invalidity**: If `1`, it indicates that an invalid conformation was detected ONLY by the information entropy approach; Otherwise, it is `0`.
 
 
