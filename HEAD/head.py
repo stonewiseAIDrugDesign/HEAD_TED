@@ -39,45 +39,19 @@ logger.addHandler(stream_handler)
 class HEAD:
     """Class to run HEAD for input molecule conformation(s)"""
     
-    def __init__(self,
-                 file_path: str,
-                 csv_column: Optional[str]=None, 
-                 add_Hs=False,
-                 remove_Hs=False,
-                 sanitize=False,
-                 gpu: int=0): 
+    def __init__(self, gpu: int=0, verbose=True): 
         """ init. 
+        Load HEAD model
         Args:
-            file_path: The path that contains input molecule conformations, support: .sdf, .pdb, .csv.
-            csv_column: The column name that specifies location of sdf strings stored in csv file. This is only working when using csv file as input.
-            add_Hs: Add Hydrogen atoms by RDKit if necessary. Note, this function removes the original Hydrogens by default.
-            remove_Hs: Whether to remove Hydrogens when loading conformations.
-            sanitize: Whether to use RDKit sanitiziation when loading conformations.
             gpu: Specify the GPU to run, default cuda:0 if cuda is available.
-            
-        Notes: HEAD requires each input conformation with correct Hydrogen atoms provided. If the inputs do not contain Hydrogen atoms, simply set add_Hs to True.
-        
+            verbose: showing verbose logging.
         """
-        
-        self.file_path =  file_path
+
         # init model
+        self.verbose = verbose
         self.device = torch.device(f"cuda:{gpu}" if torch.cuda.is_available() else "cpu")
         self.model, self.consts = self.load_ani2x_model()
-        
-        # init molecules loading
-        self.molecules = self.load_molecules_from_file(
-            self.file_path, 
-            sanitize=sanitize,
-            csv_column=csv_column,
-            add_Hs=add_Hs,
-            remove_Hs=remove_Hs
-        )
-
-        self.num_mols = len(self.molecules)
-        # init head
-        self._initialize_head()
-        
-    
+       
     def _initialize_head(self) -> None:
          # init
         self.energies = []
@@ -103,8 +77,10 @@ class HEAD:
         const_file = os.path.join(path, "torchani/resources/ani-2x_8x/rHCNOSFCl-5.1R_16-3.5A_a8-4.params")
         consts = torchani.neurochem.Constants(const_file)
         model = torchani.models.ANI2x(periodic_table_index=False, model_index=None).to(self.device)
-        logger.info(f"Device: {self.device}")
-        logger.info("Loading ANI-2x model done.")
+        
+        if self.verbose:
+            logger.info(f"Device: {self.device}")
+            logger.info("Loading ANI-2x model done.")
         
         return model, consts
     
@@ -191,8 +167,57 @@ class HEAD:
         return np.array(unstable_idx), np.array(unstable_energies), high_energy_score, h, subcomponent_index
         
         
-    def run(self, use_info_entropy=True):
-        """Run HEAD"""
+    def run(self, 
+            file_path: Optional[str]=None,
+            mol_list: Optional[list]=None,
+            csv_column: Optional[str]=None, 
+            add_Hs=False,
+            remove_Hs=False,
+            sanitize=False,
+            use_info_entropy=True
+        ):
+        """
+        Running HEAD
+        Args:
+            - file_path: The path that contains input molecule conformations, support: .sdf, .pdb, .csv. or None.
+            - mol_list: rdkit mol list or None.
+            - csv_column: The column name that specifies location of sdf strings stored in csv file. This is only working when using csv file as input.
+            - add_Hs: Add Hydrogen atoms by RDKit if necessary. Note, this function removes the original Hydrogens by default.
+            - remove_Hs: Whether to remove Hydrogens when loading conformations.
+            - sanitize: Whether to use RDKit sanitiziation when loading conformations.
+            - use_info_entropy: Whether to use entropy strategy, default to True
+            
+        Notes: HEAD requires each input conformation with correct Hydrogen atoms provided. If the inputs do not contain Hydrogen atoms, simply set add_Hs to True.
+        """
+        # Load molecules
+        if file_path is not None:
+             # init molecules loading
+            self.molecules = self.load_molecules_from_file(
+                file_path, 
+                sanitize=sanitize,
+                csv_column=csv_column,
+                add_Hs=add_Hs,
+                remove_Hs=remove_Hs
+            )
+        elif mol_list is not None:
+            _molecules = []
+            if add_Hs:
+                for mol in mol_list:
+                    if mol is not None:
+                        mol = Chem.AddHs(mol, addCoords=True)
+                    _molecules.append(mol)
+            else:
+                _molecules = mol_list
+                
+            self.molecules = _molecules
+        else:
+            raise RuntimeError("No molecules loaded, please provide molecules to be detected.")
+        
+        self.num_mols = len(self.molecules)
+        # init head
+        self._initialize_head()
+    
+        # Run HEAD
         self.start_time = time()
         if use_info_entropy:
             logger.info(
@@ -278,14 +303,15 @@ class HEAD:
             else:
                 # detected valid mol, the mol status considered as 0
                 self.invalid.append(None)
-
-        logger.info("Detecting invalid conformations completed.")
-        logger.info("========================Detection Results==========================")
-        logger.info(f"Total molecules: {self.num_mols}")
-        logger.info(f"Unsupported molecules: {np.where(self.records_indices == -1)[0].shape[0]}")
-        logger.info(f"Invalid molecules: {np.where(self.records_indices == 1)[0].shape[0]}")
-        # logger.info(f"Information entropy supplementary count: {len(np.where(self.information_entropy_invalid_ids>0)[0])}")
-        logger.info(f"Time cost: {round((time() - self.start_time ) / 60, 2)} min")
+                
+        if self.verbose:
+            logger.info("Detecting invalid conformations completed.")
+            logger.info("========================Detection Results==========================")
+            logger.info(f"Total molecules: {self.num_mols}")
+            logger.info(f"Unsupported molecules: {np.where(self.records_indices == -1)[0].shape[0]}")
+            logger.info(f"Invalid molecules: {np.where(self.records_indices == 1)[0].shape[0]}")
+            # logger.info(f"Information entropy supplementary count: {len(np.where(self.information_entropy_invalid_ids>0)[0])}")
+            logger.info(f"Time cost: {round((time() - self.start_time ) / 60, 2)} min")
     
     def load_molecules_from_file(
         self,
@@ -341,7 +367,8 @@ class HEAD:
         if len(molecules) == 0:
             logger.warning("No molcules loaded") # warning
         
-        logger.info(f"Loaded {len(molecules)} molecules.")
+        if self.verbose:
+            logger.info(f"Loaded {len(molecules)} molecules.")
         return molecules
         
     
@@ -363,14 +390,15 @@ class HEAD:
             
         head_res = pd.DataFrame(data=res, columns=["mol_id", "invalidity", "invalid atoms", "atomic energies", "HES", "atom types", "information entropy", "information entropy invalidity"])
         head_res.to_csv(output_csv, index=False)
-        logger.info(f"Write report to {output_csv} completed.")
-        logger.info("========================How to check the report====================")
-        logger.info(f"invalidity: whether this conformation is valid or not (0: valid | 1: invalid | -1: unsupported ).")
-        logger.info(f"invalid atoms: detailed atomic-level invalidness, if invalid, each entry represents (atom index, atom type, detected high atomic energy (unit: kcal/mol)), else None")
-        logger.info(f"HES: a score descibing the invalidness, and the higher the score, the more invalid the conformation is.")
-        logger.info(f"atom types: atom types.")
-        logger.info(f"information entropy: the computed information entropy for the maximum subregion, this approach is ONLY a supplementrary for HEAD.")
-        logger.info(f"information entropy invalidity: if 1, invalid conformation ONLY detected by information entropy approach, else 0.")
+        if self.verbose:
+            logger.info(f"Write report to {output_csv} completed.")
+            logger.info("========================How to check the report====================")
+            logger.info(f"invalidity: whether this conformation is valid or not (0: valid | 1: invalid | -1: unsupported ).")
+            logger.info(f"invalid atoms: detailed atomic-level invalidness, if invalid, each entry represents (atom index, atom type, detected high atomic energy (unit: kcal/mol)), else None")
+            logger.info(f"HES: a score descibing the invalidness, and the higher the score, the more invalid the conformation is.")
+            logger.info(f"atom types: atom types.")
+            logger.info(f"information entropy: the computed information entropy for the maximum subregion, this approach is ONLY a supplementrary for HEAD.")
+            logger.info(f"information entropy invalidity: if 1, invalid conformation ONLY detected by information entropy approach, else 0.")
     
     
     def plot(self, index=0, save_fig=False, fig_path=None):
@@ -439,28 +467,22 @@ def main(args):
     if extention == 'csv':
         if args.csv_column is None:
             raise RuntimeError("Please provide csv column name that stores sdf string when using csv as an input.")
-        else:
-            head = HEAD(
-                file_path=args.file_path,
-                csv_column=args.csv_column,  
-                gpu=args.gpu,
-                add_Hs=args.add_Hs,
-                remove_Hs=args.remove_Hs,
-                sanitize=args.sanitize
-            )
-    else:
-        head = HEAD(
-                file_path=args.file_path,
-                gpu=args.gpu,
-                add_Hs=args.add_Hs,
-                remove_Hs=args.remove_Hs,
-                sanitize=args.sanitize
-        )
+
+    head = HEAD(gpu=args.gpu, verbose=args.verbose)
     
     if args.not_use_info_entropy:
-        head.run(use_info_entropy=False)
+        use_info_entropy = False
     else:
-        head.run(use_info_entropy=True)
+        use_info_entropy= True
+        
+    head.run(
+        file_path=args.file_path,
+        csv_column=args.csv_column,
+        add_Hs=args.add_Hs,
+        remove_Hs=args.remove_Hs,
+        sanitize=args.sanitize,
+        use_info_entropy=use_info_entropy,
+    )
     
     if args.write_report:
         head.write_report(output_csv=args.output_csv)
@@ -514,6 +536,11 @@ if __name__ == "__main__":
     )
     
     parser.add_argument(
+        "--verbose",
+        action="store_false",
+        help="Whether to show verbose logging.",
+    )
+    parser.add_argument(
         "--not_use_info_entropy",
         action="store_false",
         help="Whether to use information entropy rules as a supplementary for HEAD evaluation.",
@@ -524,7 +551,6 @@ if __name__ == "__main__":
         action="store_true",
         help="Whether to use RDKit sanitiziation when loading conformations.",
     )
-    
     parser.add_argument(
         "--output_csv",
         default="./HEAD_result.csv",
