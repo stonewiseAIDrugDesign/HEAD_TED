@@ -7,12 +7,15 @@ HEAD utilizes an AI-derived force field (ANI-2x (http://doi.org/10.1021/acs.jctc
 ## Create Environment
 
 ```bash
-cd HEAD
+cd hea-detect/
 # create conda env from yml file
 conda env create -f head_env.yml
 
 # activate the environment
 conda activate head_env
+
+# install setup.py
+pip install -e .
 ```
 
 ## Running the Validity Test
@@ -27,14 +30,9 @@ Below is a code snippet demonstrating the detailed usage of the HEAD toolkit. Al
 Prepare an input file that contains one or multiple molecule conformations. **Note** that, HEAD requires conformations with Hydrogen atoms, if the input file does not contain Hydrogens, please set the `add_Hs` to `True` and we use RDKit to complement Hydrogens. 
 
 ```python
-from head import HEAD
+from hea_detector import HEAD
 
-#  Input a csv that stores SDF strings with a column name, e.g., "conformer_sdf". All the content of an .sdf file for a conformation is treated as the SDF string for that specific conformation. For more details, please refer to examples/examples.csv
-head = HEAD(
-    file_path="examples/example.csv",
-    csv_column="conformer_sdf",  # the field that stores SDF string of input molecules
-    # add_Hs =True, # if the input conformation does not contain the full hydrogen information
-)
+head = HEAD()
 ```
 
 Alternatively, you can provide an `.sdf` file,
@@ -42,14 +40,32 @@ Alternatively, you can provide an `.sdf` file,
 ```python
 # Alternatively, you can input an sdf file that stores one or many molecule conformations
 head = HEAD(
-    file_path="examples/example.sdf",
+    
 )
 ```
 
 Start evalutation for detecting physically implausible conformations, and save the HEAD report to csv file.
 ```python
-# Run the HEAD
-head.run(use_info_entropy=True)
+# Run the HEAD from an input SDF file
+head.run(
+    file_path="examples/example.sdf",
+    # add_Hs =True, # if the input conformation does not contain the full hydrogen information
+    use_info_entropy=True
+)
+# or a .csv file
+head.run(
+    file_path="examples/example.csv",
+    csv_column="conformer_sdf",  # the field that stores SDF string of input molecules
+    # add_Hs =True, # if the input conformation does not contain the full hydrogen information
+    use_info_entropy=True
+)
+
+# or molecules list storing rdkit mol object
+head.run(
+    mol_list=YOUR_RDKIT_MOl_LIST,  # the field that stores SDF string of input molecules
+    # add_Hs =True, # if the input conformation does not contain the full hydrogen information
+    use_info_entropy=True
+)
 
 # Save the detected results into csv file
 head.write_report(output_csv="./head_report.csv")
@@ -70,7 +86,7 @@ Then, you should obtain results similar to the example below, which displays the
 
 Run the following command,
 ```bash
-python head.py --file_path examples/example.sdf --write_report --plot
+hea-detect --file_path examples/example.sdf --write_report --plot
 ```
 Then, you should find the output report (`HEAD_report.csv`) and plot (`HEAD_fig_0.png`) stored under this directory.
 

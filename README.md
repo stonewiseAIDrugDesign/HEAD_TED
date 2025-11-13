@@ -29,7 +29,7 @@ git clone https://github.com/stonewiseAIDrugDesign/HEAD_TED.git
 
 ### 1. Dependencies for Running HEAD
 
-See [HEAD](https://github.com/stonewiseAIDrugDesign/HEAD_TED/blob/main/HEAD/README.md) for installation details.
+See [HEAD](https://github.com/stonewiseAIDrugDesign/HEAD_TED/blob/main/hea-detect/README.md) for installation details.
 
 ### 2. Dependencies for Running TED
 
