@@ -8,7 +8,7 @@ setup(
     author_email='binxi_@outlook.cn',
     packages=find_packages(),              
     package_data={
-        'hea_detector': ['torchani/*'], 
+        'hea_detector': ['torchani/**/*'], 
     },
     include_package_data=True,
     install_requires=[
