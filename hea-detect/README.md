@@ -35,15 +35,6 @@ from hea_detector import HEAD
 head = HEAD()
 ```
 
-Alternatively, you can provide an `.sdf` file,
-
-```python
-# Alternatively, you can input an sdf file that stores one or many molecule conformations
-head = HEAD(
-    
-)
-```
-
 Start evalutation for detecting physically implausible conformations, and save the HEAD report to csv file.
 ```python
 # Run the HEAD from an input SDF file
