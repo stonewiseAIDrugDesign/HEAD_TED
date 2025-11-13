@@ -13,7 +13,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'torch',
-        'rdkit==2023.9.4',
+        'rdkit',
         'numpy<2',
         'matplotlib',
         'pandas',
