@@ -1,0 +1,1 @@
+python3 Pipeline_main_for_test.py --in_csv example_data/AI_generated_raw_conformations.csv --id_column mol_id --pocket_column protein_id --conf_column raw_sdf --ref_proteins_path example_data/Proteins_wo_ligands --target_path ../../results/

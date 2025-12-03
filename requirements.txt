@@ -1,0 +1,15 @@
+ase==3.25.0 
+importlib-metadata 
+lark==1.1.9 
+mace-torch==0.3.12 
+matplotlib==3.7.2 
+mdanalysis==2.7.0 
+numpy==1.26.4 
+pandas==2.2.3 
+protobuf==3.20.0 
+rdkit==2023.9.4 
+requests==2.32.3 
+scikit-learn==1.6.1 
+scipy==1.13.1 
+tensorflow-addons==0.16.1 
+tensorflow-cpu==2.8.0

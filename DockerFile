@@ -1,0 +1,58 @@
+FROM nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        build-essential \
+        cmake \
+        git \
+        libcairo2-dev \
+        libeigen3-dev \
+        libffi-dev \
+        libfreetype6-dev \
+        libpng-dev \
+        libxml2-dev \
+        qtbase5-dev \
+        vim \
+        zlib1g-dev \
+        tzdata \
+        curl \
+        wget \
+        unzip \
+    && rm -rf /var/lib/apt/lists/* 
+
+
+RUN cd /tmp && \
+    curl https://github.com/conda-forge/miniforge/releases/download/24.11.3-2/Miniforge3-24.11.3-2-Linux-x86_64.sh -o /tmp/Miniforge3.sh &&\
+    bash /tmp/Miniforge3.sh -b -p /opt/miniforge3 && \
+    rm /tmp/Miniforge3.sh && \
+    cat /etc/profile &&\
+    echo ". /opt/miniforge3/etc/profile.d/mamba.sh" >> /etc/profile && \
+    echo "mamba activate base" >> /etc/profile && \
+    /opt/miniforge3/bin/mamba init --reverse
+ENV PATH="/opt/miniforge3/bin:${PATH}"
+
+RUN mamba install -y \
+        python=3.10
+
+RUN pip install -U --no-cache-dir \
+    ase==3.25.0 \
+    importlib-metadata \
+    lark==1.1.9 \
+    mace-torch==0.3.12 \
+    matplotlib==3.7.2 \
+    mdanalysis==2.7.0 \
+    numpy==1.26.4 \
+    pandas==2.2.3 \
+    protobuf==3.20.0 \
+    rdkit==2023.9.4 \
+    requests==2.32.3 \
+    scikit-learn==1.6.1 \
+    scipy==1.13.1 \
+    tensorflow-addons==0.16.1 \
+    tensorflow-cpu==2.8.0
+
+COPY postInstall /
+RUN chmod +x /postInstall
+RUN /postInstall

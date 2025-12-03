@@ -1,0 +1,1 @@
+python3 head.py --ligands_path examples/inputs/1b9v_ligands.sdf --protein_path examples/inputs/1b9v_protein_wo_ligand.pdb --not_use_info_entropy --write_report --output_csv ../../results/1b9v_output.csv --plot --fig_save_to_path ../../results/1b9v.png

@@ -1,0 +1,1 @@
+python3 ted.py --file_path examples/TED_example.csv --id_column mol_id --sdf_column optimized_sdf --model_path ../../data/trained_model_augmentation --augmentation_model --out_csv ../../results/TED_result.csv --detailed_output
