@@ -1,6 +1,6 @@
 # Assessing Conformation Validity and Rationality of Deep Learning-Generated 3D Molcules
 
-**Paper preprint on [bioRxiv](https://www.biorxiv.org/content/10.1101/2024.11.10.622844v1)**
+**See our paper for details [*Nature Communication*](https://www.nature.com/articles/s41467-026-69303-5)**
 
 Recent advancements in artificial intelligence (AI) have opened new frontiers in 3D molecule generation, with applications in drug design, materials science, and more. However, evaluating the quality of generated 3D conformations remains challenging due to limitations in current methods. This project presents an open-source solution to address these limitations by combining speed with quantum mechanical (QM)-level accuracy.
 

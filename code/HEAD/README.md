@@ -1,6 +1,6 @@
 # High-Energy Atom Detection (HEAD)
 
-**Paper preprint on [bioRxiv](https://www.biorxiv.org/content/10.1101/2024.11.10.622844v1)**
+**See our paper for details [*Nature Communication*](https://www.nature.com/articles/s41467-026-69303-5)**
 
 HEAD utilizes an AI-derived force field (ANI-2x (http://doi.org/10.1021/acs.jctc.0c00121) in this work) to identify atoms with elevated energy levels caused by implausible neighboring environments.
 
@@ -67,7 +67,7 @@ head.plot(index=0)
 ```
 Then, you should obtain results similar to the example below, which displays the atomic-level details of the HEAD results. The sections circled in red in each conformation correspond to the red bars in the accompanying bar plots.
 
-![Invalid Cases](../assets/invalid_cases.png "Invalid Cases")
+![Invalid Cases](../../assets/invalid_cases.png "Invalid Cases")
 ---
 
 
